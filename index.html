@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Info Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 15px;
+        }
+        h1 { text-align: center; margin-bottom: 30px; }
+        input, button {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        button {
+            background: #2196F3;
+            color: white;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Поиск информации по IP</h1>
+        
+        <input type="text" id="ipInput" placeholder="Введите IP или оставьте пустым">
+        <button onclick="getIpInfo()">Найти информацию</button>
+        
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        async function getIpInfo() {
+            const ip = document.getElementById('ipInput').value;
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.innerHTML = '⏳ Загружаем данные...';
+            
+            try {
+                const url = ip ? `https://ipapi.co/${ip}/json/` : 'https://ipapi.co/json/';
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.error) {
+                    resultDiv.innerHTML = '❌ Ошибка: ' + data.reason;
+                } else {
+                    resultDiv.innerHTML = `
+                        <strong>📍 IP-адрес:</strong> ${data.ip}<br>
+                        <strong>🏙️ Страна:</strong> ${data.country_name} (${data.country_code})<br>
+                        <strong>🏛️ Регион:</strong> ${data.region}<br>
+                        <strong>🏙️ Город:</strong> ${data.city}<br>
+                        <strong>📮 Индекс:</strong> ${data.postal}<br>
+                        <strong>📍 Координаты:</strong> ${data.latitude}, ${data.longitude}<br>
+                        <strong>⏰ Часовой пояс:</strong> ${data.timezone}<br>
+                        <strong>🏢 Провайдер:</strong> ${data.org}
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '❌ Ошибка сети: ' + error;
+            }
+        }
+    </script>
+</body>
+</html>
